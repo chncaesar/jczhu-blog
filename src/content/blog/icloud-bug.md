@@ -1,9 +1,4 @@
 ---
-
-# My Code Was Correct. My System Was Broken.
-
-```markdown
----
 title: My Code Was Correct. My System Was Broken.
 
 description: An iCloud debugging incident that made me rethink AI-assisted software development.
