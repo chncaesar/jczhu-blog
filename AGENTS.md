@@ -21,6 +21,28 @@ Standard Astro blog starter (`npm create astro@latest -- --template blog`).
 - **Assets**: `src/assets/` — local fonts (Atkinson) and placeholder images
 - **Global config**: `src/consts.ts` — SITE_TITLE, SITE_DESCRIPTION
 
+## Blog Writing Style
+
+- **Prose style**: Traditional narrative — paragraphs carry complete ideas with natural sentence rhythm. Sentence length varies organically; short sentences appear at key turning points for emphasis, not as a default pattern throughout.
+- **Not** a choppy one-sentence-per-line style. Avoid artificially breaking continuous thought into isolated lines.
+- **Structure**: Each section has a clear narrative arc. The opening drops into a concrete incident. The body traces the reasoning. The final section lands a broader engineering insight.
+- **Tone**: First-person, reflective. Not a tutorial ("here's how to do X") but a post-mortem ("here's what happened and what it revealed").
+- **Technical depth**: Name real APIs, real tools, real error values. But don't paste large code blocks as the main substance — code illustrates, prose carries the argument.
+- **Closing**: The last paragraph of the last section should deliver the essay's core claim — concise, direct, no hedging.
+
+## Deployment
+
+- This Astro project deploys to **jczhu.com**
+- Hosted on Cloudflare Pages (see `wrangler.jsonc`)
+- Update `site` in `astro.config.mjs` to `https://jczhu.com` before deploying
+
+## Owner Profile
+
+- Senior software engineer, old-school, pragmatic
+- Linux / Ubuntu / macOS user, open source contributor
+- No Windows, no flashy UI
+- Design aesthetic: terminal-style, monospace, zero decoration
+
 ## Conventions
 
 - Node >= 22.12.0 (see `engines` in package.json)
