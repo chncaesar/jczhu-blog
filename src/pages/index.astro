@@ -14,11 +14,24 @@ const posts = (await getCollection('blog'))
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={`${SITE_TITLE} — Software Engineer`} description={SITE_DESCRIPTION} />
+		<script type="application/ld+json" set:html={`${JSON.stringify({
+			'@context': 'https://schema.org',
+			'@type': 'Person',
+			'name': SITE_TITLE,
+			'url': Astro.site,
+			'description': SITE_DESCRIPTION,
+			'sameAs': [
+				'https://github.com/chncaesar',
+				'https://x.com/chncaesar165192',
+				'https://www.zhihu.com/people/zhu-jia-94-76',
+			],
+		})}`} />
 	</head>
 	<body>
 		<Header />
 		<main>
+			<h1 class="sr-only">{SITE_TITLE}</h1>
 			<div class="intro">
 				<p class="prompt"><span class="dollar">$</span> whoami</p>
 				<p class="bio">
