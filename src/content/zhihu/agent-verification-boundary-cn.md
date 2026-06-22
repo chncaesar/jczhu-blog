@@ -1,5 +1,5 @@
 ---
-title: "Agent 检查了一切正确的东西"
+title: "Agent 每步都对，系统全错了"
 description: "一个 AI Agent 提出设计，一个写了代码，一个做了审查。每一个都完成了自己的任务。但系统仍然坏了。"
 pubDate: 2026-06-22
 ---
