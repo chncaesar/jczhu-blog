@@ -29,4 +29,4 @@ pnpm-debug.log*
 !.dev.vars.example
 !.env.example
 
-zhihu/
+zhihu/**
