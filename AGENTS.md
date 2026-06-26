@@ -52,6 +52,11 @@ Standard Astro blog starter (`npm create astro@latest -- --template blog`).
 - Hosted on Cloudflare Pages (see `wrangler.jsonc`)
 - Update `site` in `astro.config.mjs` to `https://jczhu.com` before deploying
 
+## Cross-posting
+
+- **English**: [jczhu.com](https://jczhu.com) (primary) → [dev.to](https://dev.to), always with canonical URL pointing back to jczhu.com
+- **中文**: [jczhu.com](https://jczhu.com) (source in `src/content/zhihu/`, not built) → 简书 / 知乎, add "原文首发于 jczhu.com" at the end of each post
+
 ## Owner Profile
 
 - Senior software engineer, old-school, pragmatic
