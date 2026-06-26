@@ -9,11 +9,12 @@ interface Props {
 	title: string;
 	description: string;
 	image?: ImageMetadata;
+	ogType?: string;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, image } = Astro.props;
+const { title, description, image, ogType = 'website' } = Astro.props;
 const ogImage = image
 	? new URL(image.src, Astro.url)
 	: new URL('/og-default.png', Astro.site);
@@ -46,7 +47,7 @@ const ogImage = image
 <meta name="description" content={description} />
 
 <!-- Open Graph / Facebook -->
-<meta property="og:type" content="website" />
+<meta property="og:type" content={ogType} />
 <meta property="og:url" content={Astro.url} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
