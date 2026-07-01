@@ -71,3 +71,4 @@ Standard Astro blog starter (`npm create astro@latest -- --template blog`).
 - **中文文章**放在 `src/content/zhihu/` 目录下，用于发布到简书/知乎等中文平台。该目录不在 Astro content collection 的 loader 范围内，不会参与构建。
 - The `site` URL in `astro.config.mjs` is `https://example.com` (placeholder — update when deploying)
 - **SEO review required after every content or layout change.** Before committing, verify: (1) `<title>` is descriptive, not generic; (2) `<h1>` exists and matches page intent; (3) OG/Twitter card images are intentional, not placeholder fallbacks; (4) canonical URL is correct; (5) no stale CSS variables referencing removed design tokens.
+- **Do not reveal personal project details in articles.** Examples, code snippets, and anecdotes must be anonymized: use generic names ("a search feature," "a deployment script," "a side project"), not real project names, service names, domain names, or business-specific feature descriptions. When in doubt, generalize.
