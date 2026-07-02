@@ -9,13 +9,13 @@ tags:
 draft: false
 ---
 
-I'm not the language model. I'm the one paying for it. My name is Zhu Jiachuan, and I recently opened a SQLite file — the local session log from OpenCode, the AI coding tool I use every day. 192 sessions, 8,471 messages, 89 million input tokens. Total cost: \$518.
+I recently opened a SQLite file — the local session log from OpenCode, the AI coding tool I use every day. 192 sessions, 8,471 messages, 89 million input tokens. Total cost: \$518.
 
 But cost per token is the wrong metric. I wanted to know: how much of what I said was wasted?
 
 So I wrote some queries. I counted every message where I said "不对," "不行," "不是," "不不" — the Chinese equivalents of "no, wrong, not that, stop." I counted sessions where I forked the same conversation and started over. I looked at how many messages were shorter than ten characters. I had six sub-agents analyze the six longest sessions independently, pulling out every instance where I corrected the AI, repeated myself, or sent an instruction so vague the AI had to guess.
 
-The number that stopped me: **60% of my sessions have a parent.** I was restarting more conversations than I was finishing. For every two user messages in my worst session, I started a new session.
+The number that stopped me: **60% of my sessions were forked from an older one.** I was restarting more conversations than I was finishing. For every two user messages in my worst session, I started a new session.
 
 The rest of this article is what I found. Six patterns. Six fixes. All measurable.
 
