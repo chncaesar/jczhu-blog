@@ -43,7 +43,7 @@ const posts = (await getCollection('blog'))
 
 			{posts.length > 0 && (
 				<div class="recent">
-					<p class="section-label">## recent posts</p>
+					<h2 class="section-label">## recent posts</h2>
 					<ul>
 						{posts.map((post) => (
 							<li>
@@ -82,7 +82,9 @@ const posts = (await getCollection('blog'))
 	}
 	.section-label {
 		font-size: 0.875em;
+		font-weight: 400;
 		color: var(--fg-subtle);
+		line-height: inherit;
 		margin: 0 0 1em 0;
 	}
 	ul {

@@ -19,7 +19,7 @@ const posts = (await getCollection('blog')).sort(
 	<body>
 		<Header />
 		<main>
-			<p class="section-label">## posts</p>
+			<h1 class="section-label">## posts</h1>
 			<ul>
 				{
 					posts.map((post) => (
@@ -42,7 +42,9 @@ const posts = (await getCollection('blog')).sort(
 <style>
 	.section-label {
 		font-size: 0.875em;
+		font-weight: 400;
 		color: var(--fg-subtle);
+		line-height: inherit;
 		margin: 0 0 1em 0;
 	}
 	ul {
