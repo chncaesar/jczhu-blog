@@ -1,0 +1,199 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+
+const title = `OpenCode Reliability Toolkit — ${SITE_TITLE}`;
+const description = 'Small tools for making OpenCode and AI coding agents more reliable in real engineering workflows.';
+
+const tools = [
+	{
+		name: 'opencode-waitfor',
+		line: 'Wait until reality is ready.',
+		detail: 'Adds a wait_for tool for HTTP, TCP, and command readiness checks so agents stop writing fragile sleep loops.',
+		href: 'https://github.com/chncaesar/opencode-waitfor',
+		command: 'wait_for http://localhost:3000',
+	},
+	{
+		name: 'opencode-db-clean',
+		line: 'Keep the agent runtime healthy.',
+		detail: 'Analyzes and vacuums bloated OpenCode SQLite databases with WAL checkpointing, backups, and integrity checks.',
+		href: 'https://github.com/chncaesar/opencode-db-clean',
+		command: 'ocdbc analyze',
+	},
+	{
+		name: 'opencode-session-reflection',
+		line: 'Review sessions as engineering evidence.',
+		detail: 'Turns recent OpenCode sessions into qualitative reviews of communication gaps, recurring failures, and reusable workflow opportunities.',
+		href: 'https://github.com/chncaesar/opencode-session-reflection',
+		command: '/session-review',
+	},
+	{
+		name: 'opencode-fleet',
+		line: 'Coordinate agents across machines.',
+		detail: 'Lets one master OpenCode instance coordinate multiple remote OpenCode nodes for cross-machine debugging and task dispatch.',
+		href: 'https://github.com/chncaesar/opencode-fleet',
+		command: 'fleet_send_message',
+	},
+];
+
+const reading = [
+	{
+		title: 'My Agent Kept Writing sleep Loops. So I Gave It a Better Primitive.',
+		href: '/blog/wait-for-tool/',
+	},
+	{
+		title: 'My OpenCode Database Was Mostly Empty Space',
+		href: '/blog/opencode-db-clean/',
+	},
+	{
+		title: 'The Agent Session Is the New Log File',
+		href: '/blog/agent-session-log-file/',
+	},
+	{
+		title: 'OpenCode Tool Calling Internals',
+		href: '/blog/opencode-tool-calling-internals/',
+	},
+];
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={title} description={description} />
+		<script type="application/ld+json" set:html={`${JSON.stringify({
+			'@context': 'https://schema.org',
+			'@type': 'CollectionPage',
+			'name': 'OpenCode Reliability Toolkit',
+			'description': description,
+			'url': new URL('/opencode-tools/', Astro.site),
+		})}`} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="hero">
+				<p class="prompt"><span class="dollar">$</span> opencode reliability toolkit</p>
+				<h1>Small tools for reliable AI coding agents.</h1>
+				<p class="lede">
+					OpenCode is becoming part of my daily engineering infrastructure. These tools add the boring primitives I want around that runtime: readiness checks, database maintenance, session review, and multi-machine coordination.
+				</p>
+			</section>
+
+			<section class="tools" aria-labelledby="tools-heading">
+				<h2 id="tools-heading" class="section-label">## tools</h2>
+				<div class="tool-list">
+					{tools.map((tool) => (
+						<article class="tool-card">
+							<h3><a href={tool.href}>{tool.name}</a></h3>
+							<p class="tagline">{tool.line}</p>
+							<p>{tool.detail}</p>
+							<code>{tool.command}</code>
+						</article>
+					))}
+				</div>
+			</section>
+
+			<section class="principles" aria-labelledby="principles-heading">
+				<h2 id="principles-heading" class="section-label">## principles</h2>
+				<p>
+					These tools are intentionally small. They do not try to replace OpenCode, build another agent framework, or hide engineering judgment behind a dashboard. Each one gives the agent or developer a missing primitive with a tight safety boundary.
+				</p>
+				<p>
+					The broader theme is simple: AI-assisted development still needs production engineering discipline. The runtime has state, failure modes, logs, local databases, plugins, remote nodes, and verification boundaries. Treat it like infrastructure.
+				</p>
+			</section>
+
+			<section class="reading" aria-labelledby="reading-heading">
+				<h2 id="reading-heading" class="section-label">## field notes</h2>
+				<ul>
+					{reading.map((post) => (
+						<li><a href={post.href}>{post.title}</a></li>
+					))}
+				</ul>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.hero {
+		margin-bottom: 3em;
+	}
+	.prompt {
+		margin: 0 0 0.75em 0;
+		color: var(--fg-muted);
+		font-size: 0.875em;
+	}
+	.dollar {
+		color: var(--accent);
+		margin-right: 0.5em;
+	}
+	h1 {
+		margin-top: 0;
+		font-size: clamp(1.75em, 6vw, 2.35em);
+	}
+	.lede {
+		color: var(--fg-muted);
+		font-size: 1.02em;
+	}
+	.section-label {
+		font-size: 0.875em;
+		font-weight: 400;
+		color: var(--fg-subtle);
+		line-height: inherit;
+		margin: 0 0 1em 0;
+	}
+	.tool-list {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+		gap: 1em;
+		margin-bottom: 3em;
+	}
+	.tool-card {
+		border: 1px solid var(--border);
+		padding: 1em;
+		background: var(--bg);
+	}
+	.tool-card h3 {
+		margin-top: 0;
+		font-size: 1em;
+	}
+	.tool-card p {
+		font-size: 0.9em;
+	}
+	.tool-card code {
+		display: inline-block;
+		margin-top: 0.25em;
+	}
+	.tagline {
+		color: var(--fg);
+		font-weight: 600;
+	}
+	.principles,
+	.reading {
+		margin-bottom: 3em;
+	}
+	.reading ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.reading li {
+		border-bottom: 1px solid var(--border);
+	}
+	.reading li:first-child {
+		border-top: 1px solid var(--border);
+	}
+	.reading a {
+		display: block;
+		padding: 0.65em 0;
+		color: var(--fg);
+	}
+	.reading a:hover {
+		color: var(--accent);
+		text-decoration: none;
+	}
+</style>
