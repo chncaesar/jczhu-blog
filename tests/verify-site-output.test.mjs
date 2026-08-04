@@ -50,6 +50,10 @@ assert.equal(
 	'About — Jiachuan Zhu',
 	'About page title should include the site owner name.',
 );
+assert.ok(
+	aboutHtml.includes('OpenCode') && aboutHtml.includes('coding agents'),
+	'About page should reflect the OpenCode coding-agent reliability focus.',
+);
 
 const cssFiles = (await listFiles(distPath)).filter((path) => path.endsWith('.css'));
 const css = (await Promise.all(cssFiles.map((path) => readFile(path, 'utf8')))).join('\n');
