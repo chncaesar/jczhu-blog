@@ -1,74 +1,61 @@
-# AGENTS.md
-
 ## Commands
 
 ```sh
-npm run dev        # dev server on localhost:4321
-npm run build      # production build to ./dist/
-npm run preview    # preview production build locally
+npm run dev          # Astro dev server on localhost:4321
+npm run build        # production build to dist/client/ for Cloudflare adapter
+npm run verify:site  # post-build Node assertions; run after npm run build
+npm run preview      # npm run build && wrangler dev
+npm run deploy       # npm run build && wrangler deploy
+npm run generate-types # wrangler types
 ```
 
-No test/lint/typecheck scripts are configured. `astro check` can type-check `.astro` files but is not wired as a script.
+There are no lint, unit test, or typecheck scripts in `package.json`. The focused verification path is `npm run build` followed by `npm run verify:site`.
 
 ## Architecture
 
-Standard Astro blog starter (`npm create astro@latest -- --template blog`).
-
-- **Content**: `src/content/blog/*.md` — Markdown/MDX blog posts loaded via glob loader
-- **Layouts**: `src/layouts/BlogPost.astro` — single post template
-- **Pages**: `src/pages/` — file-based routing (`index.astro`, `about.astro`, `blog/index.astro`, `blog/[...slug].astro`)
-- **Components**: `src/components/` — Header, Footer, BaseHead, FormattedDate, HeaderLink
-- **Assets**: `src/assets/` — local fonts (Atkinson) and placeholder images
-- **Global config**: `src/consts.ts` — SITE_TITLE, SITE_DESCRIPTION
+- Astro 6 site for `https://jczhu.com`, deployed with `@astrojs/cloudflare` and `wrangler.jsonc`.
+- Blog posts are loaded only from `src/content/blog/**/*.{md,mdx}` via `src/content.config.ts`.
+- Chinese cross-post drafts live in `src/content/zhihu/`; they are intentionally outside Astro content collections and are not built.
+- `src/layouts/BlogPost.astro` renders both blog posts and the About page, so layout/SEO changes affect non-post pages too.
+- RSS is generated in `src/pages/rss.xml.js` from the `blog` collection and sorted newest first.
+- `BaseHead.astro` owns canonical URLs, OG/Twitter metadata, the global stylesheet import, and the fallback `/og-default.png` image.
+- `public/_headers` is copied into the Cloudflare output; `verify:site` asserts the HSTS header survives the build.
 
 ## Blog Writing Style
 
 ### English
-- **Prose style**: Traditional narrative — paragraphs carry complete ideas with natural sentence rhythm. Sentence length varies organically; short sentences appear at key turning points for emphasis, not as a default pattern throughout.
-- **Not** a choppy one-sentence-per-line style. Avoid artificially breaking continuous thought into isolated lines.
-- **Structure**: Each section has a clear narrative arc. The opening drops into a concrete incident. The body traces the reasoning. The final section lands a broader engineering insight.
-- **Tone**: First-person, reflective. Not a tutorial ("here's how to do X") but a post-mortem ("here's what happened and what it revealed").
-- **Technical depth**: Name real APIs, real tools, real error values. But don't paste large code blocks as the main substance — code illustrates, prose carries the argument.
-- **Closing**: The last paragraph of the last section should deliver the essay's core claim — concise, direct, no hedging.
+
+- Write reflective engineering post-mortems, not tutorials. Start from a concrete incident, trace the reasoning, and land on the broader engineering lesson.
+- Use normal paragraphs with varied rhythm. Do not turn prose into one sentence per line.
+- Name real APIs, tools, and error values when useful, but keep code snippets illustrative rather than central.
+- The final paragraph should state the essay's core claim directly.
 
 ### 中文
-- **核心原则：用地道中文写作，不是翻译英文。** 句式、节奏、起承转合都要按中文的阅读习惯来，不要带着英文语法的影子。
-- **句式**：多用短句，流水句，主语可以省略。中文不习惯英文那种层层嵌套的从句结构——拆开，一句一句说。
-- **被动语态**：中文少用"被"字。英文的被动结构翻成中文要改成主动式或主题句。比如不说"公式被 AI 实现了"，说"AI 把公式实现了"或者直接"公式实现出来了"。
-- **连接词**：减少"当……的时候"、"因为……所以……"、"尽管……但是……"这类硬翻译连接词。中文靠语义自然衔接，不需要像英文那样每个逻辑关系都显式标出来。
-- **节奏**：长短句交替。短句要有力，长句要流畅。不要写成每句一样长度的模板文。
-- **人称**：第一人称"我"，不要躲。技术文章也可以有语气。
 
-- **Prose style**: Traditional narrative — paragraphs carry complete ideas with natural sentence rhythm. Sentence length varies organically; short sentences appear at key turning points for emphasis, not as a default pattern throughout.
-- **Not** a choppy one-sentence-per-line style. Avoid artificially breaking continuous thought into isolated lines.
-- **Structure**: Each section has a clear narrative arc. The opening drops into a concrete incident. The body traces the reasoning. The final section lands a broader engineering insight.
-- **Tone**: First-person, reflective. Not a tutorial ("here's how to do X") but a post-mortem ("here's what happened and what it revealed").
-- **Technical depth**: Name real APIs, real tools, real error values. But don't paste large code blocks as the main substance — code illustrates, prose carries the argument.
-- **Closing**: The last paragraph of the last section should deliver the essay's core claim — concise, direct, no hedging.
+- 用地道中文写作，不要像英文翻译稿。少用层层嵌套的长从句，少用硬连接词。
+- 可以用第一人称“我”。技术文章也要有个人判断和语气。
+- 中文稿放在 `src/content/zhihu/`，用于简书/知乎等平台，不参与本站构建。
 
 ## Deployment
 
-- This Astro project deploys to **jczhu.com**
-- Hosted on Cloudflare Pages (see `wrangler.jsonc`)
-- Update `site` in `astro.config.mjs` to `https://jczhu.com` before deploying
+- `astro.config.mjs` already sets `site: 'https://jczhu.com'`; do not revert it to the Astro placeholder.
+- Deploys through Cloudflare Pages/Workers config in `wrangler.jsonc` with assets served from `./dist`.
+- Do not run `npm run deploy` unless the user explicitly asks to deploy.
 
-## Cross-posting
+## Content Rules
 
-- **English**: [jczhu.com](https://jczhu.com) (primary) → [dev.to](https://dev.to), always with canonical URL pointing back to jczhu.com
-- **中文**: [jczhu.com](https://jczhu.com) (source in `src/content/zhihu/`, not built) → 简书 / 知乎, add "原文首发于 jczhu.com" at the end of each post
+- New built posts go in `src/content/blog/` with frontmatter matching `src/content.config.ts`: required `title`, `description`, `pubDate`; optional `updatedDate`, `heroImage`, `tags`, `draft`.
+- English posts are primary on `jczhu.com`; when cross-posting to dev.to, use the `jczhu.com` canonical URL.
+- Chinese cross-posts should end with “原文首发于 jczhu.com”.
+- Do not reveal personal project details in articles. Generalize examples to “a search feature”, “a deployment script”, “a side project”, etc.
 
-## Owner Profile
+## Design And SEO
 
-- Senior software engineer, old-school, pragmatic
-- Linux / Ubuntu / macOS user, open source contributor
-- No Windows, no flashy UI
-- Design aesthetic: terminal-style, monospace, zero decoration
+- Preserve the current terminal-style, monospace, low-decoration design. Global tokens live in `src/styles/global.css`; avoid adding flashy UI patterns or decorative client JS.
+- After content or layout changes, check: descriptive `<title>`, one page-intent `<h1>`, intentional OG/Twitter image, correct canonical URL, and no stale CSS variables.
+- `tests/verify-site-output.test.mjs` currently asserts RSS sort order, blog `<h1>`, About title, CSS contrast regression, and HSTS output.
 
 ## Conventions
 
-- Node >= 22.12.0 (see `engines` in package.json)
-- New blog posts go in `src/content/blog/` with frontmatter matching the Zod schema in `src/content.config.ts`: `title`, `description`, `pubDate`, optional `updatedDate` and `heroImage`
-- **中文文章**放在 `src/content/zhihu/` 目录下，用于发布到简书/知乎等中文平台。该目录不在 Astro content collection 的 loader 范围内，不会参与构建。
-- The `site` URL in `astro.config.mjs` is `https://example.com` (placeholder — update when deploying)
-- **SEO review required after every content or layout change.** Before committing, verify: (1) `<title>` is descriptive, not generic; (2) `<h1>` exists and matches page intent; (3) OG/Twitter card images are intentional, not placeholder fallbacks; (4) canonical URL is correct; (5) no stale CSS variables referencing removed design tokens.
-- **Do not reveal personal project details in articles.** Examples, code snippets, and anecdotes must be anonymized: use generic names ("a search feature," "a deployment script," "a side project"), not real project names, service names, domain names, or business-specific feature descriptions. When in doubt, generalize.
+- Use Node >= 22.12.0 and npm; `package-lock.json` is committed.
+- This repo intentionally has zero client-side JavaScript in normal pages. Keep new behavior static unless there is a clear reason not to.
