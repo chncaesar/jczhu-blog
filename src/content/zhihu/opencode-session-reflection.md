@@ -52,25 +52,25 @@ date: 2026-07-11
 
 `opencode-session-reflection` 注册了一个工具：`session_reflection`。
 
-最常见的用法很简单。装好以后，让 OpenCode review 最近几场 session：
+最常见的用法很简单。通过 npm 装好以后，让 OpenCode 调用这个工具 review 最近几场 session：
 
 ```text
-/session-review
+session_reflection
 ```
 
-也可以指定数量：
+调用时可以指定数量：
 
 ```text
-/session-review 12
+session_reflection（limit: 12）
 ```
 
 或者指定一场 session：
 
 ```text
-/session-review <session-id>
+session_reflection（sessionID: <session-id>）
 ```
 
-它会通过 OpenCode SDK 读取 session 内容，不直接读 `opencode.db`。然后生成一段复盘 prompt，交给当前 OpenCode 模型分析。分析报告会要求模型只基于 session 证据说话，不要凭感觉编模式；每个结论都要对应 session evidence；如果证据不够，就写证据不足。
+插件通过 OpenCode API 读取 session metadata 和 transcript，跨项目发现使用 `/experimental/session`；插件不直接访问 SQLite。然后它生成一段复盘 prompt，交给当前 OpenCode 模型分析。分析报告会要求模型只基于 session 证据说话，不要凭感觉编模式；每个结论都要对应 session evidence；如果证据不够，就写证据不足。
 
 我还特意加了一层“别乱推荐插件”的约束。很多时候，看到一个重复动作，第一反应是写插件。但工具不是越多越好。报告里如果推荐新的 plugin、skill、command 或 rule，它必须分析可行性、价值、隐私风险、维护成本、误报风险，还要做 prior-art lookup：官方 OpenCode、社区列表、npm、GitHub 上有没有类似东西。已有的能覆盖大部分需求，就复用或扩展，不要为了造轮子而造轮子。
 
@@ -80,11 +80,13 @@ date: 2026-07-11
 
 ## 隐私边界
 
-这个插件读的是本地 OpenCode session。它自己不会把内容上传到任何外部服务。
+这个插件从 OpenCode API 读取 session，不会另建一套 transcript 上传服务。
 
-但有个边界必须说清楚：它会把整理出来的 prompt 返回到当前 OpenCode session。后面这段内容会不会发给模型，取决于你当前 OpenCode 配的是什么 provider。你用本地模型，就是本地；你用云端模型，就会进云端模型调用链。插件本身不额外上传，但它也不能替你的模型 provider 做隐私承诺。
+但有个边界必须说清楚：它会把选中的证据整理成 prompt，返回到当前 OpenCode session。选中的 session 证据可能会发送到 OpenCode 当前配置的模型 provider。你用本地模型，就是本地；你用云端模型，就会进云端模型调用链。插件不能替你的模型 provider 做隐私承诺。
 
-默认日志也只存审计用的元数据：run id、选了哪些 session、消息数量、prompt hash、目录 hash、跳过原因、报告路径。不会存原始用户 prompt、assistant 回复、tool output、完整 transcript，也不会存完整目录路径。
+默认日志记录 run id、选了哪些 session、消息数量、prompt hash、目录 hash、跳过原因和报告路径。经过脱敏的审计元数据只保存在本地，插件不会上传。它不会存 session 标题、原始用户 prompt、assistant 回复、tool output、完整 transcript，也不会存完整目录路径。
+
+保存的 Markdown 报告和脱敏审计元数据不是一回事。报告包含提交给工具的分析，也可能保留模型引用的片段。保存的 Markdown 报告可能包含敏感片段；报告的保留和删除由使用者管理。本地审计元数据也要当作私密文件。
 
 这不是装饰。复盘工具最容易越界的地方，就是把“为了改进工作流”变成“顺手收集一堆敏感聊天记录”。我不想要这个。
 
@@ -102,7 +104,7 @@ date: 2026-07-11
 
 重启 OpenCode 后，会注册 `session_reflection` 工具。
 
-需要注意的是，npm 插件加载会注册工具；`/session-review` 这个 slash command 是否自动可用，取决于 OpenCode 对 packaged command 文件的加载方式。如果你是本地开发或想直接用 slash command，可以用仓库里的 `npm run deploy`，它会把插件和命令复制到 `~/.config/opencode/` 对应目录。
+`session_reflection` 是标准主界面；`/session-review` 只是在本地开发时可选的辅助命令。它只是对同一工具的本地调用封装，不是 npm 安装后的标准界面。
 
 项目地址：`https://github.com/chncaesar/opencode-session-reflection`
 
@@ -115,4 +117,3 @@ date: 2026-07-11
 AI coding 里的改进，经常不是先有一个宏大的设计，再往下实现。更多时候是你被同一个问题烦到第三次，终于停下来问：这到底是我的提示词问题、Agent 的行为问题，还是应该从聊天里拿出去，变成一个硬工具？如果不复盘，这些问题就只是一次次情绪。今天觉得 AI 蠢，明天觉得自己没说清楚，后天又忘了。复盘以后，它们才会变成资产。
 
 `opencode-session-reflection` 做的事很小。它只是把旧 session 摆到桌面上，让你别靠记忆改进工作流。哪几句话总是说不清，哪些错误总是重复，哪些动作值得沉淀，真实对话会告诉你。AI 不会自己从失败里长出你的工作流。你得把失败捡回来，拆开，看清楚，然后把它们变成下一场 session 的规则。
-

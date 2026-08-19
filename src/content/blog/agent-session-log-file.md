@@ -53,7 +53,7 @@ The installation path is intentionally boring:
 { "plugin": ["opencode-session-reflection"] }
 ```
 
-Restart OpenCode, then review recent sessions. In my local development setup I also use a slash command, `/session-review`, which calls the tool and asks the current model to analyze the returned evidence. The plugin collects session content through the OpenCode SDK. It does not read `opencode.db` directly.
+Restart OpenCode, then ask it to review recent sessions. The registered `session_reflection` tool is the primary interface; `/session-review` is only an optional local-development helper. The plugin reads session metadata and transcripts through OpenCode APIs, with cross-project discovery through `/experimental/session`; it never accesses SQLite directly.
 
 The analysis prompt focuses on three categories.
 
@@ -63,7 +63,9 @@ Second: recurring OpenCode mistakes. Did the agent edit before reading context? 
 
 Third: plugin, skill, command, or rule opportunities. This is the most important category for me. The goal is not to turn every annoyance into automation. The goal is to find repeated friction where OpenCode can observe a reliable trigger and take a safe action. Some failures should become a rule. Some should become a skill. Some should become a slash command. A few deserve a plugin.
 
-The plugin writes privacy-conscious audit metadata locally under the OpenCode config directory: selected session ids and titles, hashed directory paths, message counts, transcript counts, tool-call counts, prompt hashes, and saved report paths. It does not store raw transcripts in the audit manifest. The transcript is used to generate the review prompt in the current OpenCode session; where that prompt goes depends on the model provider configured for that session.
+The plugin writes selected session ids, hashed directory paths, message counts, transcript counts, tool-call counts, prompt hashes, and saved report paths under the OpenCode config directory. Redacted audit metadata stays local and is not uploaded by the plugin. It does not store raw transcripts or session titles in the audit manifest. Selected session evidence may reach the model provider configured in OpenCode.
+
+Saved Markdown reports are different from the redacted audit manifest: they contain the supplied analysis and may preserve excerpts selected by the model. Saved Markdown reports may contain sensitive excerpts; users control their retention and deletion. Treat both reports and local audit metadata as private.
 
 That boundary matters. A session-review tool should not quietly become a second telemetry product. The point is to help the developer inspect their own local workflow, not to upload their mistakes somewhere else.
 
