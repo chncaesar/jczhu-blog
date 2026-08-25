@@ -243,6 +243,8 @@ The third lesson is to treat instruction mutation as a privileged operation. Ope
 
 The final lesson is that a simple file can be a good memory primitive when the requirement is stable project guidance. It is inspectable, portable, and deterministic. Vector retrieval and learned memory policies solve different problems. Adding them should start from a concrete failure that files, session history, and compaction cannot solve.
 
+I also maintain an [OpenCode Reliability Toolkit](/opencode-tools/) for readiness checks, database maintenance, session reflection, and multi-machine coordination.
+
 OpenCode remembers less than the word "memory" suggests, but its boundaries are useful. Project instructions say what should remain true. SQLite records what happened. Compaction decides what can still fit. None of them autonomously decides what deserves to become a long-term fact.
 
 That is the core architectural claim: reliable agent memory begins by separating authority, durability, and visibility, not by adding a vector database.

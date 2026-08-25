@@ -128,6 +128,26 @@ assert.ok(
 	!/<code[^>]*>\/session-review<\/code>/.test(reflectionToolHtml),
 	'Toolkit should not show the optional local helper as the normal installed command.',
 );
+assert.ok(
+	toolkitHtml.includes('href="/blog/opencode-memory-internals/"'),
+	'Toolkit should link to the OpenCode memory internals article.',
+);
+
+const memoryArticleHtml = await readDist('blog/opencode-memory-internals/index.html');
+assert.ok(
+	memoryArticleHtml.includes('href="/opencode-tools/"'),
+	'Memory article should link readers to the OpenCode Reliability Toolkit.',
+);
+assert.ok(
+	memoryArticleHtml.includes('href="/blog/opencode-v2-compaction-internals/"'),
+	'Memory article should link to the detailed V2 compaction analysis.',
+);
+
+const compactionArticleHtml = await readDist('blog/opencode-v2-compaction-internals/index.html');
+assert.ok(
+	compactionArticleHtml.includes('href="/blog/opencode-memory-internals/"'),
+	'Compaction article should link back to the broader memory analysis.',
+);
 
 const reflectionArticleHtml = await readDist('blog/agent-session-log-file/index.html');
 assertLocalizedContract(reflectionArticleHtml, 'English generated article', englishReflectionContract);
