@@ -11,7 +11,7 @@ tags:
   - memory
 ---
 
-I began this investigation with a narrower question than "does Codex have memory?" The product documentation already says that it does. What I wanted to know was who actually decides what survives.
+I began this investigation with a specific question: can Codex autonomously add, modify, and delete its own memories? The product documentation already says that it has memory. What I wanted to know was who actually decides what survives.
 
 When an old chat contains a useful build command, does deterministic application code copy it into a database? Does the active coding model call a memory tool? Does another model summarize the chat later? When the command becomes obsolete, is the old fact overwritten, invalidated, aged out, or simply left where future agents may still find it?
 
@@ -31,7 +31,7 @@ This analysis is pinned to [OpenAI Codex commit `8444cf63b50a8a88521e0d2970d49f6
 
 2. **The LLM owns semantic CRUD, but not lifecycle scheduling.** Prompts ask the models to decide what is useful, merge new evidence, rewrite stale guidance, preserve uncertainty, and remove claims whose evidence disappeared. Rust and SQLite code choose candidates, enforce leases, rank inputs, prune old rows, and synchronize files.
 
-3. **Deletion is not one operation.** Codex can delete an old extraction after a later no-op, drop rollout summaries that leave the selected set, ask the consolidation agent to remove unsupported guidance, prune unused database rows, remove expired extension resources, forget memory attached to a deleted thread, or reset the entire memory store.
+3. **Forgetting has several independent mechanisms, not one delete operation.** Codex can delete an old extraction after a later no-op, drop rollout summaries that leave the selected set, ask the consolidation agent to remove unsupported guidance, prune unused database rows, remove expired extension resources, forget memory attached to a deleted thread, or reset the entire memory store.
 
 4. **Retrieval is progressive disclosure, not vector RAG.** A bounded `memory_summary.md` is injected into developer instructions. The model then searches `MEMORY.md` and opens one or two supporting summaries or skills when needed.
 
@@ -42,6 +42,8 @@ This analysis is pinned to [OpenAI Codex commit `8444cf63b50a8a88521e0d2970d49f6
 7. **`AGENTS.md`, session persistence, compaction, and long-term memory remain different systems.** Team rules belong in explicit instructions. Rollouts record what happened. Compaction keeps one conversation within its context budget. The memory pipeline promotes selected lessons across conversations.
 
 ## The Pipeline I Found
+
+Before the pipeline, a definition. A **rollout** is Codex's term for the complete recorded history of one session: user messages, model responses, tool calls and outputs, turn boundaries, and session metadata, all persisted as a single file under the session directory. It is the raw transcript of one conversation, and it is the input the memory pipeline mines for reusable lessons.
 
 The implementation lives across four layers:
 
@@ -64,13 +66,13 @@ Phase 2 consolidation agent
 memory_summary.md -> MEMORY.md -> summaries / skills / source rollouts
 ```
 
-The startup path is more specific than "when a session starts." In the app server, the memory task is dispatched after a fresh, input-bearing turn has successfully started and the primary environment is configured. The worker then exits early for an ephemeral session, a disabled `memories` feature, a non-root agent, or a missing state database.
+The trigger is more precise than "when a session starts." Memory work is dispatched only after a fresh turn that carries user input has successfully started and the primary environment is configured. The "worker" here is the background task Codex spawns to run that memory pipeline — an asynchronous routine, not a separate process or an independent agent. It returns without doing anything if the session is ephemeral, the `memories` feature is disabled, the session is a sub-agent rather than a root agent, or the state database is missing.
 
-The worker runs asynchronously. Before spending model tokens, it prunes old unused extraction rows. It also checks the remaining Codex rate-limit percentage and may skip the model work when quota is low.
+Once dispatched, the worker runs in the background. It first deletes old, unused extraction rows, then checks the remaining Codex rate-limit percentage; if quota is low, it skips the model work rather than spend tokens near a limit.
 
-The defaults reveal the intended operating model. The `MemoryTool` feature is stable but disabled. Once the feature is enabled, effective memory configuration defaults to both generating and using memories. The default extraction window considers rollouts from the previous ten days, waits at least six idle hours, keeps at most 256 raw inputs for consolidation, and treats thirty days without use as the retention boundary.
+The defaults reveal the intended operating model. The `MemoryTool` feature is stable but off by default, and enabling it turns on both generating and using memories. Extraction only looks back at the previous ten days of rollouts and skips anything that has been idle for fewer than six hours. Consolidation keeps at most 256 raw inputs at a time, and any memory that goes thirty days without use reaches the retention boundary and becomes eligible for pruning.
 
-These numbers are policy defaults, not semantic decisions. They bound cost and growth. The models still decide what the surviving content means.
+Those numbers are cost and growth controls, not judgments about meaning. They decide which experiences are worth processing and how much state to keep; the models still decide what the surviving content actually means.
 
 ## Phase 1: A Model Decides What A Rollout Taught
 
@@ -90,7 +92,7 @@ That last case is easy to miss. "No useful memory" is not only an absence of cre
 
 ## Phase 2: A Model Rewrites The Global Memory
 
-Phase 2 is not a simple concatenation job. It first takes a global lease, selects a bounded set of Phase 1 records, and materializes them under `~/.codex/memories/`.
+Phase 2 is not a simple concatenation job. It first takes a global lease — a timed lock with an ownership token and periodic heartbeats — so that only one consolidation task can touch the shared memory files at a time, and a crashed worker eventually releases the lock by letting its lease expire. Only then does it select a bounded set of Phase 1 records and materialize them under `~/.codex/memories/`.
 
 The selection algorithm prefers `usage_count`, then recent `last_usage`, then source recency. Never-used records use their source update time as the fallback. Records outside the unused-memory window are ineligible.
 
@@ -109,6 +111,10 @@ The consolidation prompt gives that agent semantic ownership of three outputs:
 - `MEMORY.md`, the retrieval-oriented handbook;
 - `memory_summary.md`, the compact index injected into future prompts;
 - optional reusable packages under `skills/`.
+
+`MEMORY.md` has a deliberate structure that makes the read path work. Its top-level unit is a `# Task Group` block, one per task family, headed by a `scope:` line and an `applies_to:` line that preserves the working-directory boundary so similar tasks in different checkouts are not confused. Inside each block, `## Task <n>` sections come first, each carrying `### rollout_summary_files` (with `cwd`, `rollout_path`, `updated_at`, and `thread_id`) and `### keywords` for grep-style retrieval. After the task list come three consolidated sections: `## User preferences`, `## Reusable knowledge`, and `## Failures and how to do differently`, each bullet traceable back to task references like `[Task 1]`.
+
+This shape is why retrieval can be lexical instead of vector-based: the routing handles live in stable headings and keywords, and the durable guidance lives just below them. `memory_summary.md` then sits above `MEMORY.md` as a denser, token-budgeted index rather than a second handbook.
 
 The agent is instructed to incrementally merge new evidence, update contradictory guidance, preserve uncertainty when validation is unclear, and minimize churn when existing material is still correct. It must retain task-level provenance through rollout-summary paths, thread IDs, working directories, and update timestamps.
 
@@ -141,7 +147,7 @@ It is also weaker than a transactional fact database. The consolidated handbook 
 
 ## User Authority Is Present, But Indirect
 
-The read-path prompt tells the active model that it may update memory only after an explicit direct request from the user. Even then, it should not directly edit `MEMORY.md` or `memory_summary.md`. When the dedicated memory tools are enabled, or the active permission profile separately permits the write, it can create one timestamped Markdown note under:
+The read-path prompt is the instruction block Codex injects into every session to tell the active model how to use memory: when to consult it, how to search it, and how to cite it. Its rules include a boundary on writing. It tells the active model that it may update memory only after an explicit direct request from the user. Even then, it should not directly edit `MEMORY.md` or `memory_summary.md`. When the dedicated memory tools are enabled, or the active permission profile separately permits the write, it can create one timestamped Markdown note under:
 
 ```text
 ~/.codex/memories/extensions/ad_hoc/notes/
@@ -176,7 +182,7 @@ This design makes retrieval partly deterministic and partly agentic:
 - the model decides which evidence to open;
 - citations expose which memory influenced the answer.
 
-The citation path does more than improve observability. Codex parses cited rollout IDs from the final model output, increments `usage_count`, and sets `last_usage` for the corresponding Phase 1 records. Future Phase 2 selection then favors evidence that has actually helped later turns.
+The citation path does more than improve observability. A citation has two parts. The file entries (`MEMORY.md:234-236`, `rollout_summaries/...:10-12`, `skills/...`) point at the Markdown artifacts Phase 2 produced. The rollout IDs point back at the Phase 1 database records those artifacts were consolidated from. Codex parses those IDs from the final model output, increments `usage_count`, and sets `last_usage` for the corresponding Phase 1 records. Future Phase 2 selection then favors evidence that has actually helped later turns.
 
 That is a lightweight feedback loop:
 
