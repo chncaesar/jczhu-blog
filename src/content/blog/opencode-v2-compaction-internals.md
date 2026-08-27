@@ -252,4 +252,4 @@ Based on the current V2/core code, do not claim that:
 
 The reliable claim is more specific: V2 automatically creates a summary checkpoint when a normal provider attempt is too large, or when provider overflow recovery succeeds before side effects.
 
-For the broader model that separates compaction from project instructions and durable session history, see [OpenCode Memory Internals](/blog/opencode-memory-internals/).
+For the broader model that separates compaction from project instructions and durable session history, see [OpenCode Memory Internals](https://jczhu.com/blog/opencode-memory-internals/).

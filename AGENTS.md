@@ -46,6 +46,7 @@ There are no lint, unit test, or typecheck scripts in `package.json`. The focuse
 
 - New built posts go in `src/content/blog/` with frontmatter matching `src/content.config.ts`: required `title`, `description`, `pubDate`; optional `updatedDate`, `heroImage`, `tags`, `draft`.
 - English posts are primary on `jczhu.com`; when cross-posting to dev.to, use the `jczhu.com` canonical URL.
+- Use complete `https://jczhu.com/...` URLs for links to jczhu.com articles and site pages, so links remain correct when content is cross-posted.
 - Chinese cross-posts should end with “原文首发于 jczhu.com”.
 - Do not reveal personal project details in articles. Generalize examples to “a search feature”, “a deployment script”, “a side project”, etc.
 

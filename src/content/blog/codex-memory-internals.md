@@ -203,7 +203,7 @@ Rollout storage is durable evidence. It lets Codex reopen or analyze what happen
 
 Compaction is short-term context management. It summarizes or replaces old model-visible history so one active thread can continue within a context limit. It does not decide that a lesson should influence unrelated future threads.
 
-These distinctions match the framework I used in [OpenCode Memory Internals](/blog/opencode-memory-internals/):
+These distinctions match the framework I used in [OpenCode Memory Internals](https://jczhu.com/blog/opencode-memory-internals/):
 
 ```text
 instructions: what should govern behavior

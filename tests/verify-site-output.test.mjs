@@ -135,17 +135,17 @@ assert.ok(
 
 const memoryArticleHtml = await readDist('blog/opencode-memory-internals/index.html');
 assert.ok(
-	memoryArticleHtml.includes('href="/opencode-tools/"'),
+	memoryArticleHtml.includes('href="https://jczhu.com/opencode-tools/"'),
 	'Memory article should link readers to the OpenCode Reliability Toolkit.',
 );
 assert.ok(
-	memoryArticleHtml.includes('href="/blog/opencode-v2-compaction-internals/"'),
+	memoryArticleHtml.includes('href="https://jczhu.com/blog/opencode-v2-compaction-internals/"'),
 	'Memory article should link to the detailed V2 compaction analysis.',
 );
 
 const compactionArticleHtml = await readDist('blog/opencode-v2-compaction-internals/index.html');
 assert.ok(
-	compactionArticleHtml.includes('href="/blog/opencode-memory-internals/"'),
+	compactionArticleHtml.includes('href="https://jczhu.com/blog/opencode-memory-internals/"'),
 	'Compaction article should link back to the broader memory analysis.',
 );
 

@@ -179,7 +179,7 @@ model-visible history: summary checkpoint + recent context
 
 This is continuity under a hard context limit, not intelligent forgetting. The trigger is size, not relevance. The summarizer may preserve objectives, files, errors, and next actions, but there is no policy that scores every message by future utility. A detail omitted from the checkpoint still exists in storage, yet the model will not recover it through the normal continuation path.
 
-I covered the V2 checkpoint algorithm and its limits in more detail in [OpenCode V2 Compaction Internals](/blog/opencode-v2-compaction-internals/). For the memory model, the central point is simpler: compaction is a lossy projection over durable history.
+I covered the V2 checkpoint algorithm and its limits in more detail in [OpenCode V2 Compaction Internals](https://jczhu.com/blog/opencode-v2-compaction-internals/). For the memory model, the central point is simpler: compaction is a lossy projection over durable history.
 
 ## What OpenCode Does Not Implement
 
@@ -243,7 +243,7 @@ The third lesson is to treat instruction mutation as a privileged operation. Ope
 
 The final lesson is that a simple file can be a good memory primitive when the requirement is stable project guidance. It is inspectable, portable, and deterministic. Vector retrieval and learned memory policies solve different problems. Adding them should start from a concrete failure that files, session history, and compaction cannot solve.
 
-I also maintain an [OpenCode Reliability Toolkit](/opencode-tools/) for readiness checks, database maintenance, session reflection, and multi-machine coordination.
+I also maintain an [OpenCode Reliability Toolkit](https://jczhu.com/opencode-tools/) for readiness checks, database maintenance, session reflection, and multi-machine coordination.
 
 OpenCode remembers less than the word "memory" suggests, but its boundaries are useful. Project instructions say what should remain true. SQLite records what happened. Compaction decides what can still fit. None of them autonomously decides what deserves to become a long-term fact.
 

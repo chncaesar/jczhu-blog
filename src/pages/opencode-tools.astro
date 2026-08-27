@@ -9,6 +9,13 @@ const description = 'Small tools for making OpenCode and AI coding agents more r
 
 const tools = [
 	{
+		name: 'opencode-plugin-memory',
+		line: 'Let projects remember the lessons that matter.',
+		detail: 'Adds project-scoped Markdown memory with agent-directed add, update, archive, and read tools plus a bounded summary in future prompts.',
+		href: 'https://github.com/chncaesar/opencode-plugin-memory',
+		command: 'memory_add',
+	},
+	{
 		name: 'opencode-waitfor',
 		line: 'Wait until reality is ready.',
 		detail: 'Adds a wait_for tool for HTTP, TCP, and command readiness checks so agents stop writing fragile sleep loops.',
@@ -39,6 +46,10 @@ const tools = [
 ];
 
 const reading = [
+	{
+		title: 'OpenCode Needs Memory, Not Another Background Pipeline',
+		href: 'https://jczhu.com/blog/opencode-plugin-memory/',
+	},
 	{
 		title: 'My Agent Kept Writing sleep Loops. So I Gave It a Better Primitive.',
 		href: '/blog/wait-for-tool/',
