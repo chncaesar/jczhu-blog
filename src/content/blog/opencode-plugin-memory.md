@@ -99,13 +99,17 @@ Transparency is not only a usability choice. A memory entry becomes part of an a
 
 ## Install it in one configuration block
 
-The plugin is available at [github.com/chncaesar/opencode-plugin-memory](https://github.com/chncaesar/opencode-plugin-memory). Add a local clone or package reference to OpenCode's plugin configuration:
+The plugin is available on [npm](https://www.npmjs.com/package/@chncaesar/opencode-plugin-memory) and [GitHub](https://github.com/chncaesar/opencode-plugin-memory). Install it, then add the package reference to OpenCode's plugin configuration:
+
+```bash
+npm i @chncaesar/opencode-plugin-memory
+```
 
 ```jsonc
 // opencode.json or ~/.config/opencode/opencode.jsonc
 {
   "plugin": [
-    ["/path/to/opencode-plugin-memory", { "maxSummaryChars": 3000 }]
+    ["@chncaesar/opencode-plugin-memory", { "maxSummaryChars": 3000 }]
   ]
 }
 ```
