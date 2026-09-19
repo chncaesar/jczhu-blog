@@ -26,6 +26,7 @@ There are no lint, unit test, or typecheck scripts in `package.json`. The focuse
 ### English
 
 - Write reflective engineering post-mortems, not tutorials. Start from a concrete incident, trace the reasoning, and land on the broader engineering lesson.
+- For source-level analysis, do not write a dry walkthrough of files, functions, or fields. Use code as evidence for the underlying design: the problem being solved, responsibility boundaries, trade-offs, invariants, and failure modes. Introduce implementation details only when they support that interpretation.
 - Use normal paragraphs with varied rhythm. Do not turn prose into one sentence per line.
 - Name real APIs, tools, and error values when useful, but keep code snippets illustrative rather than central.
 - The final paragraph should state the essay's core claim directly.
