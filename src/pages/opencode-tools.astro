@@ -37,11 +37,11 @@ const tools = [
 		command: 'session_reflection',
 	},
 	{
-		name: 'opencode-fleet',
-		line: 'Coordinate agents across machines.',
-		detail: 'Lets one master OpenCode instance coordinate multiple remote OpenCode nodes for cross-machine debugging and task dispatch.',
-		href: 'https://github.com/chncaesar/opencode-fleet',
-		command: 'fleet_send_message',
+		name: 'opencode-portable',
+		line: 'Take the whole setup with you.',
+		detail: 'Packs config, MCP servers, sessions and credentials into one archive and restores it on another machine, with a dry run that writes nothing until you apply.',
+		href: 'https://github.com/chncaesar/opencode-portable',
+		command: 'opencode-portable export --out setup.ocm',
 	},
 ];
 
@@ -92,7 +92,7 @@ const reading = [
 				<p class="prompt"><span class="dollar">$</span> opencode reliability toolkit</p>
 				<h1>Small tools for reliable AI coding agents.</h1>
 				<p class="lede">
-					OpenCode is becoming part of my daily engineering infrastructure. These tools add the boring primitives I want around that runtime: readiness checks, database maintenance, session review, and multi-machine coordination.
+					OpenCode is becoming part of my daily engineering infrastructure. These tools add the boring primitives I want around that runtime: readiness checks, database maintenance, session review, and moving a working setup to another machine.
 				</p>
 			</section>
 
@@ -116,7 +116,7 @@ const reading = [
 					These tools are intentionally small. They do not try to replace OpenCode, build another agent framework, or hide engineering judgment behind a dashboard. Each one gives the agent or developer a missing primitive with a tight safety boundary.
 				</p>
 				<p>
-					The broader theme is simple: AI-assisted development still needs production engineering discipline. The runtime has state, failure modes, logs, local databases, plugins, remote nodes, and verification boundaries. Treat it like infrastructure.
+					The broader theme is simple: AI-assisted development still needs production engineering discipline. The runtime has state, failure modes, logs, local databases, plugins, machine-local setup, and verification boundaries. Treat it like infrastructure.
 				</p>
 			</section>
 
